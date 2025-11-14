@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  ai:
+    build:
+      context: .
+      dockerfile: infra/ai.Dockerfile
+    container_name: ai_service
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: infra/backend.Dockerfile
+    container_name: backend_service
+    ports:
+      - "3000:3000"
+    depends_on:
+      - ai
+    networks:
+      - app-network
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/web.Dockerfile
+    container_name: web_service
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
